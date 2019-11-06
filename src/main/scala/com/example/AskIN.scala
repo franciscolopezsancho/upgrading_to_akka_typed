@@ -3,22 +3,19 @@ package com.example
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, ActorSystem, Behavior}
 import akka.util.Timeout
-import com.example.Bar.Start
-import com.example.Customer.OpenMeTheDoor
-import com.example.Porter.{HalCommand, HalResponse, OpenThePodBayDoorsPlease}
-
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 //This is also an interaction pattern
 //grab pictures from
 //https://doc.akka.io/docs/akka/snapshot/typed/interaction-patterns.html#request-response-with-ask-between-two-actors
-object Porter {
+object AI  {
 
 
-  def apply() = Behaviors.receiveMessage[HalCommand] {
+  def apply() =
+    Behaviors.receiveMessage[HalCommand] {
     case OpenThePodBayDoorsPlease(respondTo) =>
-      respondTo ! HalResponse("I'm sorry, Dave. I'm afraid I can't do that.")
+      respondTo ! HalResponse(s"I'm sorry, ${respondTo.path.name}. I'm afraid I can't do that.")
       Behaviors.same
     case WaitTo(ref) =>
       Behaviors.same
@@ -35,29 +32,23 @@ object Porter {
 }
 
 
-object Customer {
+object Astronaut {
 
-  def apply(hal: ActorRef[HalCommand]) =
+  import com.example.AI._
+
+  def apply(ai: ActorRef[HalCommand]) =
     Behaviors.setup[CustomerCommand] { context =>
-      // Note: The second parameter list takes a function `ActorRef[T] => Message`,
-      // as OpenThePodBayDoorsPlease is a case class it has a factory apply method
-      // that is what we are passing as the second parameter here it could also be written
-      // as `ref => OpenThePodBayDoorsPlease(ref)` TODO ask team akka, `ref => OpenThePodBayDoorsPlease(ref)` is not compiling
-      //TODO val backendResponseMapper: ActorRef[Backend.Response] =
-      //      context.messageAdapter(rsp => WrappedBackendResponse(rsp))
-
       implicit val timeout: Timeout = 3.seconds
       Behaviors.receiveMessage {
         // the adapted message ends up being processed like any other
         // message sent to the actor
         case AdaptedResponse(message) =>
-          context.log.info("Got response from hal: {}", message)
+          //????? why $ai doesn't have the proper name?
+          context.log.info(s"Got response from $ai: {}", message)
           Behaviors.same
-        case OpenMeTheDoor(ref) =>
-          //never register Future callbacks like onComplete or map accessing
-          //mutable actor state!
+        case AskOpenMeTheDoor(ref) =>
           //TODO QUESTION: The future callback is because it will use a thread of the pool of the dispatcher???
-          context.ask(hal)(OpenThePodBayDoorsPlease) {
+          context.ask(ai)(OpenThePodBayDoorsPlease) {
             //this will send the message to self
             case Success(HalResponse(message)) => AdaptedResponse(message)
             case Failure(ex) => AdaptedResponse("Request failed")
@@ -71,22 +62,24 @@ object Customer {
 
   case class AdaptedResponse(message: String) extends CustomerCommand
 
-  case class OpenMeTheDoor(ref: ActorRef[HalCommand]) extends CustomerCommand
+  case class AskOpenMeTheDoor(ref: ActorRef[HalCommand]) extends CustomerCommand
 
 
 }
 
-object Bar {
+object Odyseey {
+
+  import com.example.AI._
+  import com.example.Astronaut._
 
   def apply(): Behavior[Start] = {
     Behaviors.setup { context =>
-      val porter: ActorRef[HalCommand] = context.spawn(Porter(), "porter")
-      val customer = context.spawn(Customer(porter), "david")
+      val ai: ActorRef[HalCommand] = context.spawn(AI(), "Hal")
+      val astronaut = context.spawn(Astronaut(ai), "Dave")
 
       Behaviors.receiveMessage {
-        //can I wait to say open the door please?
         case s: Start => {
-          customer ! OpenMeTheDoor(porter)
+          astronaut ! AskOpenMeTheDoor(ai)
           Behaviors.same
         }
       }
@@ -99,11 +92,12 @@ object Bar {
 
 object AskFabricApp extends App {
 
-  val system: ActorSystem[Start] = ActorSystem(Bar(), "bar")
+  import com.example.Odyseey._
+
+  val system: ActorSystem[Start] = ActorSystem(Odyseey(), "StanleyKubrik")
   system ! Start()
+  Thread.sleep(100)
   system.terminate()
 
 }
-
-
 

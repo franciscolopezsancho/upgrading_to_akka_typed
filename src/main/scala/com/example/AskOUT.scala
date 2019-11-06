@@ -17,7 +17,7 @@ object CookieFabric {
   def apply(): Behaviors.Receive[CookieFabric.GiveMeCookies] =
     Behaviors.receiveMessage { message =>
       Thread.sleep(message.count * 1000)
-      message.replyTo ! Cookies(message.count)
+      message.replyTo ! CookiesBox(message.count)
       Behaviors.same
     }
 
@@ -27,11 +27,10 @@ object CookieFabric {
 
   case class GiveMeCookies(count: Int, replyTo: ActorRef[Reply]) extends Command
 
-  case class Cookies(count: Int) extends Reply
+  case class CookiesBox(count: Int) extends Reply
 
 
 }
-
 
 object CookieFabricApp extends App {
 
@@ -44,25 +43,26 @@ object CookieFabricApp extends App {
   val cookieFabric: ActorSystem[CookieFabric.GiveMeCookies] = ActorSystem(CookieFabric(), "helloWorldMain")
   implicit val scheduler = cookieFabric.scheduler
 
-  //Checkout the timeout each cookie takes a seccond
-                                          //adapter anonymo
   val result: Future[CookieFabric.Reply] = cookieFabric.ask(ref => CookieFabric.GiveMeCookies(4, ref))
 
   // the response callback will be executed on this execution context
-  //TODO elaborate on that
+  // with great power comes....
   implicit val ec = cookieFabric.executionContext
 
+
   result.onComplete {
-    case Success(CookieFabric.Cookies(count)) => println(s"Yay, $count cookies!")
+    case Success(CookieFabric.CookiesBox(count)) => println(s"Yay, $count cookies!")
     case Failure(ex) => println(s"Boo! didn't get cookies: ${ex.getMessage}")
   }
 
-
-  //In actor code where some API returned a Future use pipeToSelf
-  //to turn it into a message
-  //Never
-  //do Await.result in production code!
-  //register Future callbacks like onComplete or map accessing
-  //mutable actor state!
 }
+
+//In classic you had to do the type
+//(coffeeHouse ? CoffeeHouse.GetStatus).mapTo[CoffeeHouse.Status] onComplete {
+//  case Success(status) => log.info("Status: guest count = {}", status.guestCount)
+//  case Failure(error)  => log.error(error, "Can't get status!")
+//}
+
+
+
 

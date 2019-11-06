@@ -27,10 +27,8 @@ object WorkerGuardian {
     (context, message) =>
       message match {
         case Start =>
-          val pool = Routers.pool(poolSize = 4)(
-            // make sure the workers are restarted if they fail
-            Behaviors.supervise(Worker()).onFailure[Exception](SupervisorStrategy.restart))
-          ///where do I create the actors??
+          //Supervision could be added here
+          val pool = Routers.pool(poolSize = 4)(Worker())
           val router = context.spawn(pool, "worker-pool")
           (0 to 10).foreach { n =>
             router ! Worker.DoLog(s"msg $n")

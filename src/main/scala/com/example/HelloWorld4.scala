@@ -2,38 +2,41 @@ package com.example
 
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorSystem, Behavior}
-import com.example.HelloWorld4.{Present, Stuff, Trick}
+import com.example.HelloWorld4.{HallowingMessage, Treat, Trick}
 
 //STATE
 object HelloWorld4 {
 
-  def apply(): Behavior[Stuff] =
-    doYourThing(1)
 
-  private def doYourThing(patience: Int): Behavior[Stuff] =
+
+
+  def apply(patience: Int): Behavior[HallowingMessage] =
     Behaviors.receive { (context, message) =>
       message match {
         case Trick(joke) =>
-          context.log.info(s"that joke is not to funny to be honest")
-          if (patience == 0) {
+          if (patience > 0) {
+            context.log.info(s" $joke is not too funny to be honest")
+            apply(patience - 1)
+            //we don't need explicit behavior here, it's implicit
+            //is not recursion!, we return a Behavior here. So it won't be executed til next message is received
+          } else {
             context.log.info("Please leave me alone")
             Behavior.stopped
-          } else {
-            doYourThing(patience - 1)
-            //functional style, In and out!
-            //we don't need explicit behavior here, it's implicit
           }
-        case Present(content) =>
+        case Treat(content) =>
           context.log.info(s"thank you for the $content")
+          //apply(patience + 1)
           Behavior.same
       }
     }
 
-  sealed trait Stuff
 
-  case class Present(content: String) extends Stuff
+  //more neat relation between classes....
+  sealed trait HallowingMessage
 
-  case class Trick(joke: String) extends Stuff
+  case class Treat(content: String) extends HallowingMessage
+
+  case class Trick(joke: String) extends HallowingMessage
 
 
 }
@@ -41,13 +44,15 @@ object HelloWorld4 {
 
 object HelloWorld4App extends App {
 
-  val system: ActorSystem[Stuff] = ActorSystem(HelloWorld4(), "helloWorldMain")
+  val system: ActorSystem[HallowingMessage] = ActorSystem(HelloWorld4(1), "helloWorldMain")
   system ! Trick("There is an English, an American and a French")
-  system ! Present("chocolate")
+  system ! Treat("chocolate")
   system ! Trick("There is an English, an American and a French")
-  system ! Present("Million Pounds")
+  //system ! Trick("There is an English, an American and a French")
+  system ! Treat("Million Pounds")
   //bare in mind how the system takes the message before it stops. Stopping is the actor not the App
-
+  Thread.sleep(100)
+  system.terminate()
 
 
 }
