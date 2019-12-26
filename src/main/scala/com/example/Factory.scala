@@ -17,7 +17,7 @@ object Guardian {
         context.log.info(s"got $message, I should get going")
         actorRef ! Trick("There is an English, an American and a French")
         actorRef ! Treat("chocolate")
-        Behavior.same
+        Behaviors.same
       }
     }
 
@@ -46,7 +46,7 @@ object SeriousMan {
         case Treat(content) =>
           context.log.info(s"thank you for the $content")
       }
-      Behavior.stopped
+      Behaviors.stopped
     }
 
   sealed trait HallowingMessage

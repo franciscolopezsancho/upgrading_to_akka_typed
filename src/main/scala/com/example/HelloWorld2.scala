@@ -15,7 +15,7 @@ object HelloWorld2 {
           //[error]         case String =>
         case s:String =>
           context.log.info(s"the message is.... $message")
-          Behavior.stopped
+          Behaviors.stopped
 //        case Strong(content) =>
 //          context.log.info(s"the message is.... $content")
 //          Behavior.stopped

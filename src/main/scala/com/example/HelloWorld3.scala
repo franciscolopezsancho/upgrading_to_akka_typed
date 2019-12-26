@@ -16,7 +16,7 @@ object HelloWorld3 {
         case Trait(content) =>
           context.log.info(s"thank you for the $content")
       }
-      Behavior.stopped
+      Behaviors.stopped
     }
 
   //recommended to be called Command
@@ -36,6 +36,7 @@ object HelloWorld3App extends App {
   //be aware of the signature here
   val system: ActorSystem[HallowingMessage] = ActorSystem(HelloWorld3(), "helloWorldMain")
   system ! Trick("There is an English, an American and a French")
+  Thread.sleep(100)
   system.terminate()
 
 }

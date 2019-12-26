@@ -19,7 +19,7 @@ object SpawnerGuardian {
       val actorRef:ActorRef[NoJokeMan.Command] = context.spawn(NoJokeMan(),"helloWorld3")
       actorRef ! Trick("There is an English, an American and a French")
       actorRef ! Treat("Million Pounds")
-      Behavior.same
+      Behaviors.same
     }
 }
 
@@ -43,10 +43,10 @@ object  NoJokeMan {
       message match {
         case Trick(joke) =>
           context.log.info(s"don't find it funny. Take your '$joke' joke back")
-          Behavior.stopped
+          Behaviors.stopped
         case Treat(content) =>
           context.log.info(s"thank you for the $content")
-          Behavior.same
+          Behaviors.same
       }
 
     }

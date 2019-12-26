@@ -21,12 +21,12 @@ object HelloWorld4 {
             //is not recursion!, we return a Behavior here. So it won't be executed til next message is received
           } else {
             context.log.info("Please leave me alone")
-            Behavior.stopped
+            Behaviors.stopped
           }
         case Treat(content) =>
           context.log.info(s"thank you for the $content")
           //apply(patience + 1)
-          Behavior.same
+          Behaviors.same
       }
     }
 

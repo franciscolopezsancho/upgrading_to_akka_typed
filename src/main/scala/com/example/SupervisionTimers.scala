@@ -9,6 +9,7 @@ object Counter {
     //wrapping behaviors, another flavour
     Behaviors.supervise(counter(1)).onFailure(SupervisorStrategy.restart)
   //SupervisorStrategy.restart.withLimit(maxNrOfRetries = 10, withinTimeRange = 10.seconds))
+  //Supervision.restart.withStopChildren(false)
 
   private def counter(count: Int): Behavior[Command] =
     Behaviors.supervise(
@@ -61,7 +62,7 @@ object HelloWorld2Guardian {
         //factory 2
         timers.startSingleTimer("xyz", "I'm alive!!!", 1.seconds)
 
-        Behavior.same
+        Behaviors.same
       }
     }
 }
@@ -82,9 +83,6 @@ object HelloWorldApp2 extends App {
 
 
 
-//################# KEEP CHILDREN ALIVE
-//Children can be kept alive on restart through
-//Supervision.restart.withStopChildren(false)
 
 //################# SYSTEM SCHEDULER
 ///context.system.scheduler....

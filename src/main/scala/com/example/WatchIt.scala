@@ -14,10 +14,10 @@ object MistressControlProgram {
       .receive[Command] { (context, message) =>
         message match {
           case SpawnJob(name, duration) =>
-            context.log.info("Spawning job with priority {}!", duration)
-            val job = context.spawn(SpecialisedWorker(name), s"$name-$duration")
-            job ! SpecialisedWorker.Task(duration)
-            context.watch(job)
+            context.log.info(s"Spawning a worker of type [$name] with duration $duration")
+            val worker = context.spawn(SpecialisedWorker(name), s"$name-$duration")
+            worker ! SpecialisedWorker.Task(duration)
+            context.watch(worker)
             Behaviors.same
         }
       }
@@ -54,7 +54,7 @@ object SpecialisedWorker {
             context.log.info(s"my name is $name, and I'm doing my duty")
             //for some reason an exception occurs
             throw new IllegalStateException("I got too tired")
-            Behavior.stopped
+            Behaviors.stopped
           }
         }
       }

@@ -16,16 +16,16 @@ object CookieFabric {
 
   def apply(): Behaviors.Receive[CookieFabric.GiveMeCookies] =
     Behaviors.receiveMessage { message =>
-      Thread.sleep(message.count * 1000)
+//      Thread.sleep(message.count * 4000)
       message.replyTo ! CookiesBox(message.count)
       Behaviors.same
     }
 
-  sealed trait Command {}
-
-  sealed trait Reply
+  sealed trait Command
 
   case class GiveMeCookies(count: Int, replyTo: ActorRef[Reply]) extends Command
+
+  sealed trait Reply
 
   case class CookiesBox(count: Int) extends Reply
 
@@ -57,11 +57,7 @@ object CookieFabricApp extends App {
 
 }
 
-//In classic you had to do the type
-//(coffeeHouse ? CoffeeHouse.GetStatus).mapTo[CoffeeHouse.Status] onComplete {
-//  case Success(status) => log.info("Status: guest count = {}", status.guestCount)
-//  case Failure(error)  => log.error(error, "Can't get status!")
-//}
+
 
 
 

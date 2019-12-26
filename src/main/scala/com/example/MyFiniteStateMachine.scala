@@ -20,7 +20,7 @@ object MyFiniteStateMachine {
           badMood()
         case Treat(content) =>
           context.log.info(s"thank you for the $content")
-          Behavior.same
+          Behaviors.same
       }
     }
 
@@ -29,7 +29,7 @@ object MyFiniteStateMachine {
       message match {
         case Trick(joke) =>
           context.log.info(s"don't find it funny. Take your '$joke' joke back")
-          Behavior.stopped
+          Behaviors.stopped
         case Treat(content) =>
           context.log.info(s"thank you for the $content")
           goodMood()

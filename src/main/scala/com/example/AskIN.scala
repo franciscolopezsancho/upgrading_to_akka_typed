@@ -40,14 +40,15 @@ object Astronaut {
     Behaviors.setup[CustomerCommand] { context =>
       implicit val timeout: Timeout = 3.seconds
       Behaviors.receiveMessage {
-        // the adapted message ends up being processed like any other
-        // message sent to the actor
         case AdaptedResponse(message) =>
-          //????? why $ai doesn't have the proper name?
           context.log.info(s"Got response from $ai: {}", message)
           Behaviors.same
         case AskOpenMeTheDoor(ref) =>
-          //TODO QUESTION: The future callback is because it will use a thread of the pool of the dispatcher???
+          //In classic you had to do the type
+          //(coffeeHouse ? CoffeeHouse.GetStatus).mapTo[CoffeeHouse.Status] onComplete {
+          //  case Success(status) => log.info("Status: guest count = {}", status.guestCount)
+          //  case Failure(error)  => log.error(error, "Can't get status!")
+          //}
           context.ask(ai)(OpenThePodBayDoorsPlease) {
             //this will send the message to self
             case Success(HalResponse(message)) => AdaptedResponse(message)
@@ -90,7 +91,7 @@ object Odyseey {
 
 }
 
-object AskFabricApp extends App {
+object MoviesFabricApp extends App {
 
   import com.example.Odyseey._
 
