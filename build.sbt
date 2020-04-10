@@ -2,9 +2,9 @@ name := "akka-quickstart-scala"
 
 version := "1.0"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.13.1"
 
-lazy val akkaVersion = "2.5.26"
+lazy val akkaVersion = "2.6.3"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,

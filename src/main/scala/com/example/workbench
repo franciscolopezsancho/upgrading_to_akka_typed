@@ -1,0 +1,16 @@
+
+case class BO(a: String)
+
+val stable_variable = 2
+
+def matcher(x: Any): String = {
+  x match {
+    case x:BO => ""
+    case x :: xs => "secuence"
+    case (a,b) => "tuple"
+    case `stable_variable` => "stable"
+    case BO(a) => "class"
+    case x: String => "type"
+    case _ => "wildcard"
+  }
+}

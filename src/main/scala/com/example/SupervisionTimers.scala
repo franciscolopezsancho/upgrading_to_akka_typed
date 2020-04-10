@@ -12,7 +12,7 @@ object Counter {
   //Supervision.restart.withStopChildren(false)
 
   private def counter(count: Int): Behavior[Command] =
-    Behaviors.supervise(
+  
       Behaviors.receive[Command] { (context, message) =>
         message match  {
           case Increment(nr: Int) =>
@@ -24,7 +24,7 @@ object Counter {
             replyTo ! count
             Behaviors.same
         }
-    }).onFailure(SupervisorStrategy.restart)
+    }
 
   sealed trait Command
 
@@ -60,8 +60,7 @@ object HelloWorld2Guardian {
       Behaviors.receive { (context, message) =>
         context.log.info(s"the message is.... $message")
         //factory 2
-        timers.startSingleTimer("xyz", "I'm alive!!!", 1.seconds)
-
+        timers.startSingleTimer("xyz", "I'm alive!!!", 3.seconds)
         Behaviors.same
       }
     }
@@ -74,7 +73,7 @@ object HelloWorldApp2 extends App {
 
   val system: ActorSystem[String] = ActorSystem(HelloWorld2Guardian(), "helloWorldMain")
   system ! "Hello"
-  Thread.sleep(2000)
+  Thread.sleep(4000)
   system.terminate()
 
 }

@@ -11,7 +11,7 @@ object Worker {
 
     Behaviors.receiveMessage {
       case DoLog(text) =>
-        context.log.info("Got message {}", text)
+        context.log.info(s"${context.self.path.name} Got message {}", text)
         Behaviors.same
     }
   }

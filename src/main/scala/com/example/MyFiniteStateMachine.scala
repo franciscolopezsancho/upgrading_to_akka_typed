@@ -50,10 +50,11 @@ object NonTuringMachineApp extends App {
 
   //be aware of the signature here
   val system: ActorSystem[MyFiniteStateMachine.Command] = ActorSystem(MyFiniteStateMachine(), "helloWorldMain")
-  system ! Trick("There is an English, an American and a French")
+  system ! Trick("take this spider")
   system ! Treat("chocolate")
   system ! Trick("aweful joke")
-  system ! Treat("Million Pounds")
+  system ! Trick("aweful joke")
+  system ! Treat("chocolate")
   Thread.sleep(100)
   system.terminate()
 

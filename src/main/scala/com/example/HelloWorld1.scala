@@ -24,8 +24,7 @@ object HelloWorldApp extends App {
   val system: ActorSystem[String] = ActorSystem(HelloWorld(), "helloWorldMain")
   system ! "Hello"
   system ! "Hello"
-  Thread.sleep(100)
-  system.terminate()
-  //be aware that this could terminate before it receives the message
+  Thread.sleep(1000)
+  //be aware that this could terminate before it receives the second message
 
 }

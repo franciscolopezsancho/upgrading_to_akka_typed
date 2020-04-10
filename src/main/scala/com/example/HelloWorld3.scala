@@ -35,7 +35,7 @@ object HelloWorld3App extends App {
 
   //be aware of the signature here
   val system: ActorSystem[HallowingMessage] = ActorSystem(HelloWorld3(), "helloWorldMain")
-  system ! Trick("There is an English, an American and a French")
+  system ! Trick("take this spider")
   Thread.sleep(100)
   system.terminate()
 

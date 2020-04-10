@@ -22,6 +22,7 @@ object MistressControlProgram {
         }
       }
       .receiveSignal {
+        //order matters!!
         case (context, ChildFailed(ref)) =>
           context.log.info(s"My children job ${ref._1} stopped with Exception ${ref._2.getMessage}")
           Behaviors.stopped
@@ -77,6 +78,7 @@ object MistressControlProgramApp extends App {
   val system: ActorSystem[Command] = ActorSystem(MistressControlProgram(), "MistressControlProgram")
   system ! SpawnJob("check", 1)
   system ! SpawnJob("analysis", 6)
+
   // gracefully stop the system
   Await.result(system.whenTerminated, 6.seconds)
 

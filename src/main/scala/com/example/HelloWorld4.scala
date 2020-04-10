@@ -7,9 +7,6 @@ import com.example.HelloWorld4.{HallowingMessage, Treat, Trick}
 //STATE
 object HelloWorld4 {
 
-
-
-
   def apply(patience: Int): Behavior[HallowingMessage] =
     Behaviors.receive { (context, message) =>
       message match {
@@ -45,11 +42,10 @@ object HelloWorld4 {
 object HelloWorld4App extends App {
 
   val system: ActorSystem[HallowingMessage] = ActorSystem(HelloWorld4(1), "helloWorldMain")
-  system ! Trick("There is an English, an American and a French")
+  system ! Trick("take this spider")
   system ! Treat("chocolate")
-  system ! Trick("There is an English, an American and a French")
-  //system ! Trick("There is an English, an American and a French")
-  system ! Treat("Million Pounds")
+  system ! Trick("a snake is upon you!")
+  system ! Treat("best candy ever")
   //bare in mind how the system takes the message before it stops. Stopping is the actor not the App
   Thread.sleep(100)
   system.terminate()

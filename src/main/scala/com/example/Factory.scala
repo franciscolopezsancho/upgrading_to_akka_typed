@@ -11,12 +11,13 @@ object Guardian {
   def apply(): Behavior[Start] =
     Behaviors.setup { context =>
       //initial tasks like of instance spawn
+      context.log.info("setting up!")
       val actorRef: ActorRef[HallowingMessage] = context.spawn(SeriousMan(), "helloWorld3")
       Behaviors.receiveMessage { message =>
         //Actor creation, spawn and actor ref typed
         context.log.info(s"got $message, I should get going")
-        actorRef ! Trick("There is an English, an American and a French")
         actorRef ! Treat("chocolate")
+        actorRef ! Trick("There is an English, an American and a French")
         Behaviors.same
       }
     }
@@ -30,7 +31,8 @@ object FactoryApp extends App {
 
   val system: ActorSystem[Start] = ActorSystem(Guardian(), "guardian")
   system ! Start("some'")
-  Thread.sleep(100)
+  system ! Start("some'")
+  Thread.sleep(5000)
   system.terminate()
 
 }
@@ -43,10 +45,12 @@ object SeriousMan {
       message match {
         case Trick(joke) =>
           context.log.info(s"don't find it funny. Take your '$joke' joke back")
+           Behaviors.stopped
         case Treat(content) =>
           context.log.info(s"thank you for the $content")
+           Behaviors.same
       }
-      Behaviors.stopped
+     
     }
 
   sealed trait HallowingMessage
